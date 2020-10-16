@@ -3,4 +3,3 @@ venv
 *.pyc
 celerybeat-schedule
 walletProject/.env
-wallet/migrations
