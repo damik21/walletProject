@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+
+  web:
+    build: ./
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code/
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12.4-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=wallet_project
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  redis:
+    image: redis:alpine
+
+  celery:
+    build: ./
+    volumes:
+      - .:/code/
+    command: celery -A walletProject worker -B -l info
+    depends_on:
+      - redis
+      - web
+
+#  prometheus:
+#    image: prom/prometheus:v2.14.0
+#    volumes:
+#    - ./prometheus/:/etc/prometheus/
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#    ports:
+#    - '9090:9090'
+#  grafana:
+#    image: grafana/grafana:6.5.2
+#    ports:
+#    - '3060:3000'
